@@ -1,15 +1,35 @@
-# Basic Sample Hardhat Project
+## Requirements
+- Install node.js [node js website](https://nodejs.org/en/)
+- Create An INFURA account [infura website](https://infura.io)
+- Create an etherscan account [etherscan website](https://etherscan.io/register)
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+## Install project
+- Open a terminal at project root
+- Execute this command:
 
-Try running some of the following tasks:
+```bash
+npm install
+```
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
+## Env settings
+- copy .env.default to .env file
+- Fill the properties inside this file.
+
+## Execute tests
+```bash
+npx hardhat test   
+
+```
+
+## Deploy
+On testnet:
+```bash
+npx hardhat run --network testnet scripts/deploy.js
+
+```
+
+on mainnet:
+```bash
+npx hardhat run --network mainnet scripts/deploy.js
+
 ```

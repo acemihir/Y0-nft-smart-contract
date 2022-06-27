@@ -1,14 +1,12 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "erc721a/contracts/ERC721A.sol";
 
-contract Y0 is ERC721A, Ownable {
+contract Y0 is ERC1155, Ownable {
   using SafeMath for uint256;
-  using Strings for uint256;
 
   // ==============================================
   // Properties
@@ -39,33 +37,31 @@ contract Y0 is ERC721A, Ownable {
   uint256 public maxMintPerWallet = 3;
   uint256 public maxMintPerTransaction = 1;
 
-  bool public revealNFT = false;
+  mapping (uint256 => string) private _uris;
 
-  string public baseURI;
-  string public baseExtension = ".json";
-  string public hiddenURI;
-
-  constructor() ERC721A("Y0 NFT", "Y0 NFT") {
+  constructor(string memory _tokenUri) ERC1155(_tokenUri) {
     maxSupply = MINT_CAP_NORMAL + MINT_CAP_RARE + MINT_CAP_SUPER + MINT_CAP_EXTRA;
   }
 
   // ==============================================
   // Functions
   // ==============================================
-  /**
-    * Set the uri used during the unreveal period
-    * @param _hiddenURI {string} hidden URI
-  */
-  function setHiddenURI(string memory _hiddenURI) public onlyOwner {
-    hiddenURI = _hiddenURI;
-  }
 
   /**
-    * Set the uris used to retrived nft metas
-    * @param _baseURI {string} base URI
+    * Set the isActive flag to activate/desactivate the mint capability 
+    * @param _tokenId {uint256} tokenId
   */
-  function setBaseURI(string memory _baseURI) public onlyOwner {
-    baseURI = _baseURI;
+  function uri(uint256 _tokenId) override public view returns (string memory) {
+      return(_uris[_tokenId]);
+  }
+  
+  /**
+    * Set tokenUri for a certain token Id
+    * @param _tokenId {uint256} tokenId
+    * @param _uri {string} uri of token metadata
+  */
+  function setTokenUri(uint256 _tokenId, string memory _uri) public onlyOwner {
+      _uris[_tokenId] = _uri; 
   }
 
   /**
@@ -74,14 +70,6 @@ contract Y0 is ERC721A, Ownable {
   */
   function setIsActive(bool _isActive) public onlyOwner {
     isActive = _isActive;
-  }
-
-  /**
-    * Set the revealNFT flag to reveal or hide NFTs
-    * @param _revealNFT {bool} A flag to reveal NFTs
-  */
-  function setRevealNFT(bool _revealNFT) public onlyOwner {
-    revealNFT = _revealNFT;
   }
 
   /**
@@ -141,14 +129,14 @@ contract Y0 is ERC721A, Ownable {
   function publicMint(address _to, uint256 _num, uint256 _mintType) public payable {
     require(isActive, 'Mint is not active');
     require(_num <= maxMintPerTransaction, '_num should be < maxMintPerWallet');
-    require(balanceOf(_to) < maxMintPerWallet, 'maxMintPerWallet has been reached for this wallet');
+    require(balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4)  < maxMintPerWallet, 'maxMintPerWallet has been reached for this wallet');
 
     if (_mintType == 1) {
       // Normal type nft
       uint256 currentSupply = normal_car_count;
       require(currentSupply + _num <= MAX_SUPPLY1, 'Exceeded total supply');
       require(msg.value >= normal_car_price * _num,'Ether Value sent is not sufficient');
-      _safeMint(_to, _num);
+      _mint(_to, 1, _num, "");
       normal_car_count += _num;
 
     } else if (_mintType == 2) {
@@ -156,7 +144,7 @@ contract Y0 is ERC721A, Ownable {
       uint256 currentSupply = rare_car_count;
       require(currentSupply + _num <= MAX_SUPPLY2, 'Exceeded total supply');
       require(msg.value >= rare_car_price * _num,'Ether value sent is not sufficient');
-      _safeMint(_to, _num);
+      _mint(_to, 2, _num, "");
       rare_car_count += _num;
 
     } else if (_mintType == 3) {
@@ -164,7 +152,7 @@ contract Y0 is ERC721A, Ownable {
       uint256 currentSupply = super_car_count;
       require(currentSupply + _num <= MAX_SUPPLY3, 'Exceeded total supply');
       require(msg.value >= super_car_price * _num,'Ether value sent is not sufficient');
-      _safeMint(_to, _num);
+      _mint(_to, 3, _num, "");
       super_car_count += _num;
 
     } else if (_mintType == 4) {
@@ -172,7 +160,7 @@ contract Y0 is ERC721A, Ownable {
       uint256 currentSupply = extra_car_count;
       require(currentSupply + _num <= MAX_SUPPLY4, 'Exceeded total supply');
       require(msg.value >= extra_car_price * _num,'Ether value sent is not sufficient');
-      _safeMint(_to, _num);
+      _mint(_to, 4, _num, "");
       extra_car_count += _num;
 
     } else  {
@@ -191,28 +179,28 @@ contract Y0 is ERC721A, Ownable {
       // Normal type nft
       uint256 currentSupply = normal_car_count;
       require(currentSupply + _num <= MAX_SUPPLY1, 'Exceeded total supply');
-      _safeMint(_to, _num);
+      _mint(_to, 1, _num, "");
       normal_car_count += _num;
 
     } else if (_mintType == 2) {
       // Rare type nft
       uint256 currentSupply = rare_car_count;
       require(currentSupply + _num <= MAX_SUPPLY2, 'Exceeded total supply');
-      _safeMint(_to, _num);
+      _mint(_to, 2, _num, "");
       rare_car_count += _num;
 
     } else if (_mintType == 3) {
       // Super type nft
       uint256 currentSupply = super_car_count;
       require(currentSupply + _num <= MAX_SUPPLY3, 'Exceeded total supply');
-      _safeMint(_to, _num);
+      _mint(_to, 3, _num, "");
       super_car_count += _num;
 
     } else if (_mintType == 4) {
       // Extra type nft
       uint256 currentSupply = extra_car_count;
       require(currentSupply + _num <= MAX_SUPPLY4, 'Exceeded total supply');
-      _safeMint(_to, _num);
+      _mint(_to, 4, _num, "");
       extra_car_count += _num;
 
     } else  {
@@ -220,25 +208,20 @@ contract Y0 is ERC721A, Ownable {
     }
   }
 
-  // Returns a tokenURI
-  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
-
-    if (revealNFT) {
-      return string(abi.encodePacked(baseURI, tokenId.toString(), baseExtension));
-    } else {
-      return string(abi.encodePacked(hiddenURI));      
-    }
-  }
-
   /**
     * Function to withdraw collected amount during minting by the owner
-    * @param _wallet {address} address 
+    * @param _wallet1 {address} address 
+    * @param _wallet2 {address2} address2
   */
-  function withdraw(address _wallet) public onlyOwner {
-    uint balance = address(this).balance;
+  function withdraw(address _wallet1, address _wallet2) public onlyOwner {
+    uint256 balance = address(this).balance;
     require(balance > 0, "Balance should be more then zero");
 
-    payable(address(_wallet)).transfer(balance);
+    // Pay first wallet (95%) of the balance
+    uint256 balance1 = balance.div(95).mul(100);
+    uint256 balance2 = balance.div(5).mul(100);
+    payable(address(_wallet1)).transfer(balance1);
+
+    payable(address(_wallet2)).transfer(balance2);
   }
 }

@@ -27,7 +27,7 @@ describe('Y0', async function() {
     [owner, account1, account2] = await ethers.getSigners();
 
     // Populate contract object
-    contract = await Y0.deploy();
+    contract = await Y0.deploy("http://ipfs.address/{1}.json");
     await contract.deployed(); 
     
     // Retrieve basic informations

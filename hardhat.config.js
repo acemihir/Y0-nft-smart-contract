@@ -18,11 +18,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.4",
-  defaultNetwork: "mumbai",
+  defaultNetwork: "testnet",
   networks: {
-    goerli: {
-      url: process.env.INFURA_GOERLI_URI,
-      accounts: [`${process.env.GOERLI_PRIVATE_KEY}`]
+    testnet: {
+      url: process.env.INFURA_TESTNET_URI,
+      accounts: [`${process.env.TESTNET_PRIVATE_KEY}`]
     },
     mainnet: {
       url: process.env.INFURA_MAINNET_URI,
@@ -30,7 +30,7 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY
+    apiKey: process.env.ETHERSCAN_API_KEY
   },
   solidity: {
     version: '0.8.11',
