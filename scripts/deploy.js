@@ -1,3 +1,4 @@
+require('dotenv').config({path:__dirname+'/.env'})
 // We require the Hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
 //
@@ -15,7 +16,7 @@ async function main() {
 
   // We get the contract to deploy
   const Y0 = await hre.ethers.getContractFactory("Y0");
-  const y0 = await Y0.deploy("");
+  const y0 = await Y0.deploy(process.env.TOKENS_URI);
 
   await y0.deployed();
 

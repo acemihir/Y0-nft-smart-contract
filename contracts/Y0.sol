@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -11,11 +12,6 @@ contract Y0 is ERC1155, Ownable {
   // ==============================================
   // Properties
   // ==============================================
-  uint256 public MINT_CAP_NORMAL = 1600;  
-  uint256 public MINT_CAP_RARE = 400; 
-  uint256 public MINT_CAP_SUPER = 200; 
-  uint256 public MINT_CAP_EXTRA = 22; 
-
   uint256 public normal_car_count = 0;
   uint256 public rare_car_count = 0;
   uint256 public super_car_count = 0;
@@ -26,10 +22,10 @@ contract Y0 is ERC1155, Ownable {
   uint256 public super_car_price = 33 ether;
   uint256 public extra_car_price = 44 ether; 
 
-  uint256 public MAX_SUPPLY1 = 1600; 
-  uint256 public MAX_SUPPLY2 = 400; 
-  uint256 public MAX_SUPPLY3 = 200; 
-  uint256 public MAX_SUPPLY4 = 22; 
+  uint256 public MAX_SUPPLY_NORMAL = 1600; 
+  uint256 public MAX_SUPPLY_RARE = 400; 
+  uint256 public MAX_SUPPLY_SUPER = 200; 
+  uint256 public MAX_SUPPLY_EXTRA = 22; 
   
   bool public isActive = false;
 
@@ -40,15 +36,14 @@ contract Y0 is ERC1155, Ownable {
   mapping (uint256 => string) private _uris;
 
   constructor(string memory _tokenUri) ERC1155(_tokenUri) {
-    maxSupply = MINT_CAP_NORMAL + MINT_CAP_RARE + MINT_CAP_SUPER + MINT_CAP_EXTRA;
+    maxSupply = MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA;
   }
 
   // ==============================================
   // Functions
   // ==============================================
-
   /**
-    * Set the isActive flag to activate/desactivate the mint capability 
+    * Get token uri (overrided to work properly with opensea)
     * @param _tokenId {uint256} tokenId
   */
   function uri(uint256 _tokenId) override public view returns (string memory) {
@@ -129,12 +124,13 @@ contract Y0 is ERC1155, Ownable {
   function publicMint(address _to, uint256 _num, uint256 _mintType) public payable {
     require(isActive, 'Mint is not active');
     require(_num <= maxMintPerTransaction, '_num should be < maxMintPerWallet');
-    require(balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4)  < maxMintPerWallet, 'maxMintPerWallet has been reached for this wallet');
-
+    uint256 totalBalanceOf =  balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4);
+    require(totalBalanceOf < maxMintPerWallet, 'maxMintPerWallet has been reached for this wallet');
+    
     if (_mintType == 1) {
       // Normal type nft
       uint256 currentSupply = normal_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY1, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply');
       require(msg.value >= normal_car_price * _num,'Ether Value sent is not sufficient');
       _mint(_to, 1, _num, "");
       normal_car_count += _num;
@@ -142,7 +138,7 @@ contract Y0 is ERC1155, Ownable {
     } else if (_mintType == 2) {
       // Rare type nft
       uint256 currentSupply = rare_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY2, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_RARE, 'Exceeded total supply');
       require(msg.value >= rare_car_price * _num,'Ether value sent is not sufficient');
       _mint(_to, 2, _num, "");
       rare_car_count += _num;
@@ -150,7 +146,7 @@ contract Y0 is ERC1155, Ownable {
     } else if (_mintType == 3) {
       // Super type nft
       uint256 currentSupply = super_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY3, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_SUPER, 'Exceeded total supply');
       require(msg.value >= super_car_price * _num,'Ether value sent is not sufficient');
       _mint(_to, 3, _num, "");
       super_car_count += _num;
@@ -158,13 +154,13 @@ contract Y0 is ERC1155, Ownable {
     } else if (_mintType == 4) {
       // Extra type nft
       uint256 currentSupply = extra_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY4, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_EXTRA, 'Exceeded total supply');
       require(msg.value >= extra_car_price * _num,'Ether value sent is not sufficient');
       _mint(_to, 4, _num, "");
       extra_car_count += _num;
 
-    } else  {
-      require(false, 'This mint type does not exist');
+    } else {
+      require(false, 'This tokenId doesnt exist');
     }
   }
 
@@ -178,28 +174,28 @@ contract Y0 is ERC1155, Ownable {
     if (_mintType == 1) {
       // Normal type nft
       uint256 currentSupply = normal_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY1, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply');
       _mint(_to, 1, _num, "");
       normal_car_count += _num;
 
     } else if (_mintType == 2) {
       // Rare type nft
       uint256 currentSupply = rare_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY2, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_RARE, 'Exceeded total supply');
       _mint(_to, 2, _num, "");
       rare_car_count += _num;
 
     } else if (_mintType == 3) {
       // Super type nft
       uint256 currentSupply = super_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY3, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_SUPER, 'Exceeded total supply');
       _mint(_to, 3, _num, "");
       super_car_count += _num;
 
     } else if (_mintType == 4) {
       // Extra type nft
       uint256 currentSupply = extra_car_count;
-      require(currentSupply + _num <= MAX_SUPPLY4, 'Exceeded total supply');
+      require(currentSupply + _num <= MAX_SUPPLY_EXTRA, 'Exceeded total supply');
       _mint(_to, 4, _num, "");
       extra_car_count += _num;
 
@@ -210,18 +206,20 @@ contract Y0 is ERC1155, Ownable {
 
   /**
     * Function to withdraw collected amount during minting by the owner
-    * @param _wallet1 {address} address 
-    * @param _wallet2 {address2} address2
+    * @param _wallet1 {address} address 1 get 95% of balance
+    * @param _wallet2 {address2} address 2 get 9% of balance
   */
   function withdraw(address _wallet1, address _wallet2) public onlyOwner {
     uint256 balance = address(this).balance;
     require(balance > 0, "Balance should be more then zero");
 
     // Pay first wallet (95%) of the balance
-    uint256 balance1 = balance.div(95).mul(100);
-    uint256 balance2 = balance.div(5).mul(100);
+    uint256 balance1 = (balance * 95 / 100);
+    uint256 balance2 = (balance * 5 / 100);
+    console.log("log-balance", balance);
+    console.log(balance1);
+    console.log(balance2);
     payable(address(_wallet1)).transfer(balance1);
-
     payable(address(_wallet2)).transfer(balance2);
   }
 }
