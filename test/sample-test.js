@@ -359,13 +359,13 @@ describe('Y0', async function() {
 
       expect(proportionFromBalanceToWallet1.eq(diffWallet1)).to.equal(true);
 
-    // Ratio calculus wallet 2
-    const proportionFromBalanceToWallet2 = contractBalanceBefore.mul(5).div(100);
-    const diffWallet2 = balanceWalletAccount2After.sub(balanceWalletAccount2Before);
-    console.log("log-proportionFromBalanceToWallet2", proportionFromBalanceToWallet2)
-    console.log("log-diffWallet2", diffWallet2)
-    
-    expect(proportionFromBalanceToWallet2.eq(diffWallet2)).to.equal(true);
+      // Ratio calculus wallet 2
+      const proportionFromBalanceToWallet2 = contractBalanceBefore.mul(5).div(100);
+      const diffWallet2 = balanceWalletAccount2After.sub(balanceWalletAccount2Before);
+      console.log("log-proportionFromBalanceToWallet2", proportionFromBalanceToWallet2)
+      console.log("log-diffWallet2", diffWallet2)
+      
+      expect(proportionFromBalanceToWallet2.eq(diffWallet2)).to.equal(true);
 
       expect(contractBalanceAfter.eq(0)).to.equal(true);
     });

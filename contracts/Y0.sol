@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -213,12 +212,9 @@ contract Y0 is ERC1155, Ownable {
     uint256 balance = address(this).balance;
     require(balance > 0, "Balance should be more then zero");
 
-    // Pay first wallet (95%) of the balance
+    // Pay wallet 1 95% and wallet 2 5%
     uint256 balance1 = (balance * 95 / 100);
     uint256 balance2 = (balance * 5 / 100);
-    console.log("log-balance", balance);
-    console.log(balance1);
-    console.log(balance2);
     payable(address(_wallet1)).transfer(balance1);
     payable(address(_wallet2)).transfer(balance2);
   }
