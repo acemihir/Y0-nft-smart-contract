@@ -138,12 +138,12 @@ contract Y0 is ERC1155, Ownable {
   }
 
   /**
-    * Public Mint function
+    * Public Mint function(This mint function can call in Ethereum and credit card payment ways both. In paper.xyz card way, mint function name must be `claimTo`.)
     * @param _to {address} address
     * @param _num {uint256} number of mint for this transaction
     * @param _mintType {uint256} mintType (1: normal, 2: rare, 3: super, 4: extra )
    */
-  function mint(address _to, uint256 _num, uint256 _mintType) external payable {
+  function claimTo(address _to, uint256 _num, uint256 _mintType) external payable {
     require(isActive, 'Mint is not active');
     require(_num <= maxMintPerTransaction, 'Number of mint cannot be more than maximal number of mint per wallet');
     require(
@@ -181,6 +181,94 @@ contract Y0 is ERC1155, Ownable {
     } else {
       require(false, 'This tokenId doesnt exist');
     }
+  }
+
+ /**
+    * Public Price function(this function must need paper card way.)
+    * @notice Checks the price of the NFT
+    * @param _mintType {uint256} mintType (1: normal, 2: rare, 3: super, 4: extra )
+    * @return {unit256} The price of a single NFT in Wei.
+   */
+  function price(uint256  _mintType) public view returns (uint256) {
+    uint256 mintPrice;
+
+    if (_mintType == 1) {
+      // Normal type NFT
+      mintPrice = _mintType * normal_car_price;
+
+    } else if (_mintType == 2) {
+      // Rare type NFT
+      mintPrice = _mintType * rare_car_price;
+
+    } else if (_mintType == 3) {
+      // Super type NFT
+      mintPrice = _mintType * super_car_price;
+
+    } else if (_mintType == 4) {
+      // Extra type NFT
+      mintPrice = _mintType * extra_car_price;
+
+    }
+    return mintPrice;
+  }
+
+  /**
+    * Public getClaimIneligibilityReason function(This function must need paper card way.)
+    * @notice Gets any potential reason that the _userWallet is not able to claim _quantity of NFT
+    * @param _mintType {uint256} mintType (1: normal, 2: rare, 3: super, 4: extra )
+    * @return {unit256} price  of collection as mintType.
+   */
+  function getClaimIneligibilityReason(address _to, uint256 _num, uint256 _mintType) public view returns (string memory) {
+    string memory errorMessage = "";
+
+    if (!isActive) {errorMessage = "Mint is not active";}
+    if (_num > maxMintPerTransaction) {errorMessage = "Number of mint cannot be more than maximal number of mint per wallet";}
+    if (balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4) > maxMintPerWallet) {errorMessage = "Maximal amount of mint has been reached for this wallet";}
+
+    if (_mintType == 1) {
+      // Normal type NFT
+      if (normal_car_count + _num >= MAX_SUPPLY_NORMAL) errorMessage = "Exceeded total supply of normal cars";
+    } else if (_mintType == 2) {
+      // Rare type NFT
+      if (rare_car_count + _num >= MAX_SUPPLY_RARE) errorMessage = "Exceeded total supply of rare cars";
+
+    } else if (_mintType == 3) {
+      // Super type NFT
+      if (super_car_count + _num >= MAX_SUPPLY_SUPER) errorMessage = "Exceeded total supply of super cars";
+
+    } else if (_mintType == 4) {
+      // Extra type NFT
+      if (extra_car_count + _num >= MAX_SUPPLY_EXTRA) errorMessage = "Exceeded total supply of extra cars";
+    } else {
+      errorMessage = "You can't find mint type";
+    }
+    return errorMessage;
+  }
+
+  /**
+    * @notice Checks the total amount of NFTs left to be claimed(This function must need paper card way.)
+    * @param _mintType {uint256} mintType (1: normal, 2: rare, 3: super, 4: extra )
+    * @return uint256 The number of NFTs left to be claimed
+  */
+  function unclaimedSupply(uint256 _mintType) public view returns (uint256) {
+    uint256 leftSupply;
+    if (_mintType == 1) {
+      // Normal type NFT
+      leftSupply = MAX_SUPPLY_NORMAL - normal_car_count;
+
+    } else if (_mintType == 2) {
+      // Rare type NFT
+      leftSupply = MAX_SUPPLY_RARE -  rare_car_count;
+
+    } else if (_mintType == 3) {
+      // Super type NFT
+      leftSupply = MAX_SUPPLY_SUPER - super_car_count;
+
+    } else if (_mintType == 4) {
+      // Extra type NFT
+      leftSupply = MAX_SUPPLY_EXTRA - extra_car_count;
+    }
+    return leftSupply;
   }
 
   /**
@@ -236,4 +324,5 @@ contract Y0 is ERC1155, Ownable {
     payable(address(_wallet1)).transfer(balance1);
     payable(address(_wallet2)).transfer(balance2);
   }
+
 }
