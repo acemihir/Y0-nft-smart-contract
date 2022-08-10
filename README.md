@@ -16,14 +16,17 @@ npm install
 - copy .env.default to .env file
 
 ########### GENERAL SETTINGS #################
+
 ETHERSCAN_API_KEY="YOUR_ETHERSCAN_API_KEY"
 TOKENS_URI="https://gateway.pinata.cloud/ipfs/HASH"
 
 ########### TEST NET SETTINGS #################
+
 INFURA_TESTNET_URI="https://rinkeby.infura.io/v3/HASH"
 TESTNET_PRIVATE_KEY="YOUR_METAMASK_PRIVATE_KEY"
 
 ########### MAIN NET SETTINGS #################
+
 INFURA_MAINNET_URI="https://mainnet.infura.io/v3/HASH"
 MAINNET_PRIVATE_KEY="YOUR_METAMASK_PRIVATE_KEY"%
 
