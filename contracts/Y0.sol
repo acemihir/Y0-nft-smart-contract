@@ -16,11 +16,24 @@ contract Y0 is ERC1155, Ownable {
   uint256 public super_car_count = 0;
   uint256 public extra_car_count = 0;
 
-  uint256 public normal_car_price = 11 ether;
-  uint256 public rare_car_price = 22 ether;
-  uint256 public super_car_price = 33 ether;
-  uint256 public extra_car_price = 44 ether; 
 
+ // ==============================================
+  // Properties PRICE IN DEV
+  // ==============================================
+  uint256 public normal_car_price = 0.0011 ether;
+  uint256 public rare_car_price = 0.0022 ether;
+  uint256 public super_car_price = 0.0033 ether;
+  uint256 public extra_car_price = 0.0044 ether; 
+
+  // ==============================================
+  // Properties PRICE IN PRODUCTION
+  // ==============================================
+  // uint256 public normal_car_price = 11 ether;
+  // uint256 public rare_car_price = 22 ether;
+  // uint256 public super_car_price = 33 ether;
+  // uint256 public extra_car_price = 44 ether; 
+
+ 
   uint256 public MAX_SUPPLY_NORMAL = 1600; 
   uint256 public MAX_SUPPLY_RARE = 400; 
   uint256 public MAX_SUPPLY_SUPER = 200; 
