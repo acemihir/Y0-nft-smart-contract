@@ -27,7 +27,6 @@ module.exports = {
 			},
 		},
 	},
-	defaultNetwork: 'testnet',
 	networks: {
 		testnet: {
 			url: process.env.INFURA_TESTNET_URI,

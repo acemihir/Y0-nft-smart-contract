@@ -150,7 +150,6 @@ contract Y0 is ERC1155, Ownable {
       balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4) < maxMintPerWallet,
       'Maximal amount of mint has been reached for this wallet'
     );
-    
     if (_mintType == 1) {
       // Normal type NFT
       require(normal_car_count + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply of normal cars');

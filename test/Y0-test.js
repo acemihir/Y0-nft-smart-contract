@@ -168,12 +168,12 @@ describe('Y0', async function() {
     });
   });
 
-  describe('publicMint', async function() {
+  describe('claimTo', async function() {
     it('Should return an error if contract is not active', async () => {
       // Disable mint
       await contract.connect(owner).setIsActive(false)
       try {
-        await contract.connect(account1).publicMint(account1.address,1 , 1)
+        await contract.connect(account1).claimTo(account1.address,1 , 1)
         assert.fail(0, 1, 'Exception not thrown');
       } catch(err) {
         expect(err.toString()).to.include('Mint is not active');  
@@ -182,12 +182,12 @@ describe('Y0', async function() {
     it('Should return an error if _num >= maxMintPerTransaction', async () => {
       await contract.connect(owner).setIsActive(true)
       const maxMintPerTransaction = await contract.maxMintPerTransaction();
-      const overflowMintNumber = maxMintPerTransaction + 1;
+      const overflowMintNumber = maxMintPerTransaction.add(ethers.BigNumber.from("1"));
       try {
-        await contract.connect(account1).publicMint(account1.address, overflowMintNumber, 1)
+        await contract.connect(account1).claimTo(account1.address, overflowMintNumber, 1)
         assert.fail(0, 1, 'Exception not thrown');
       } catch(err) {
-        expect(err.toString()).to.include('_num should be < maxMintPerWallet');  
+        expect(err.toString()).to.include('Number of mint cannot be more than maximal number of mint per wallet');  
       }
     });
     it('Should return an error if _to wallet contains more nfts than authorized maxMintPerWallet', async () => {
@@ -195,10 +195,10 @@ describe('Y0', async function() {
       await contract.connect(owner).setIsActive(true)
       await contract.connect(owner).setMaxMintPerWallet(0)
       try {
-        await contract.connect(account2).publicMint(account1.address,1 , 1)
+        await contract.connect(account2).claimTo(account1.address,1 , 1)
         assert.fail(0, 1, 'Exception not thrown');
       } catch(err) {
-        expect(err.toString()).to.include('maxMintPerWallet has been reached for this wallet');  
+        expect(err.toString()).to.include('Maximal amount of mint has been reached for this wallet');  
       }
     });
     it('Should return an error if we mint more than supply for a certain type', async () => {
@@ -212,7 +212,7 @@ describe('Y0', async function() {
       // Set max MintPerWallet 
       await contract.connect(owner).setMaxMintPerWallet(overflowSupply)
       try {
-        await contract.connect(account1).publicMint(account1.address,overflowSupply , 4)
+        await contract.connect(account1).claimTo(account1.address,overflowSupply , 4)
         assert.fail(0, 1, 'Exception not thrown');
       } catch(err) {
         expect(err.toString()).to.include('Exceeded total supply');  
@@ -229,7 +229,7 @@ describe('Y0', async function() {
       // Set max MintPerWallet 
       await contract.connect(owner).setMaxMintPerWallet(overflowSupply)
       try {
-        await contract.connect(account1).publicMint(account1.address,overflowSupply , 4)
+        await contract.connect(account1).claimTo(account1.address,overflowSupply , 4)
         assert.fail(0, 1, 'Exception not thrown');
       } catch(err) {
         expect(err.toString()).to.include('Exceeded total supply');  
@@ -241,7 +241,7 @@ describe('Y0', async function() {
       await contract.connect(owner).setIsActive(true);
 
       const mintPrice1 = await contract.normal_car_price();
-      await contract.connect(account1).publicMint(account1.address, tokenId, 1, {
+      await contract.connect(account1).claimTo(account1.address, tokenId, 1, {
         value: mintPrice1
       });
       const balanceOfAccount1 = await contract.balanceOf(account1.address, tokenId);
@@ -318,7 +318,7 @@ describe('Y0', async function() {
 
       // Mint
       const mintPrice1 = await contract.normal_car_price();
-      await contract.connect(account1).publicMint(account1.address, tokenId, 1, {
+      await contract.connect(account1).claimTo(account1.address, tokenId, 1, {
         value: mintPrice1
       });
 
