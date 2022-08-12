@@ -19,7 +19,7 @@ task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
  */
 module.exports = {
 	solidity: {
-		version: '0.8.11',
+		version: '0.8.7',
 		settings: {
 			optimizer: {
 				enabled: true,
@@ -27,7 +27,6 @@ module.exports = {
 			},
 		},
 	},
-	defaultNetwork: 'testnet',
 	networks: {
 		testnet: {
 			url: process.env.INFURA_TESTNET_URI,
