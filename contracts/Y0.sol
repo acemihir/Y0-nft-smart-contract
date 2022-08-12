@@ -46,7 +46,6 @@ contract Y0 is ERC1155, Ownable {
 
   uint256 public maxSupply;
   uint256 public maxMintPerWallet = 3;
-  uint256 public maxMintPerTransaction = 1;
 
   mapping (uint256 => string) private _uris;
 
@@ -102,21 +101,6 @@ contract Y0 is ERC1155, Ownable {
     isActive = _isActive;
   }
 
-  /**
-    * Set max mint quantity per wallet
-    * @param _maxMintPerWallet {uint256} max mint per wallet
-  */
-  function setMaxMintPerWallet(uint256 _maxMintPerWallet) external onlyOwner {
-    maxMintPerWallet = _maxMintPerWallet;
-  }
-
-  /**
-    * Set max mint per transaction
-    * @param _maxMintPerTransaction {uint256} max mint per transaction
-   */
-  function setMaxMintPerTransaction(uint256 _maxMintPerTransaction) external onlyOwner {
-    maxMintPerTransaction = _maxMintPerTransaction;
-  }
 
   /**
     * Set normal car price
@@ -158,11 +142,7 @@ contract Y0 is ERC1155, Ownable {
    */
   function claimTo(address _to, uint256 _num, uint256 _mintType) external payable {
     require(isActive, 'Mint is not active');
-    require(_num <= maxMintPerTransaction, 'Number of mint cannot be more than maximal number of mint per wallet');
-    require(
-      balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4) < maxMintPerWallet,
-      'Maximal amount of mint has been reached for this wallet'
-    );
+    
     if (_mintType == 1) {
       // Normal type NFT
       require(normal_car_count + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply of normal cars');
@@ -234,8 +214,6 @@ contract Y0 is ERC1155, Ownable {
     string memory errorMessage = "";
 
     if (!isActive) {errorMessage = "Mint is not active";}
-    if (_num > maxMintPerTransaction) {errorMessage = "Number of mint cannot be more than maximal number of mint per wallet";}
-    if (balanceOf(_to, 1) + balanceOf(_to, 2) + balanceOf(_to, 3) + balanceOf(_to, 4) > maxMintPerWallet) {errorMessage = "Maximal amount of mint has been reached for this wallet";}
 
     if (_mintType == 1) {
       // Normal type NFT
