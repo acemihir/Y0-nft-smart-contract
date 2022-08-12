@@ -68,12 +68,20 @@ contract Y0 is ERC1155, Ownable {
   function symbol() external pure returns (string memory) {
       return _SYMBOL;
   }
+
   /**
     * Set the isPaused flag to activate/desactivate the mint capability 
     * @param _isActive {bool} A flag to activate contract 
    */
   function setIsActive(bool _isActive) external onlyOwner {
     isPaused = _isActive;
+  }
+
+  /**
+    * Set the isPaused flag to desactivate the mint capability 
+   */
+  function pause() external onlyOwner {
+    isPaused = true;
   }
 
   /**
