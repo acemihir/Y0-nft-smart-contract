@@ -33,7 +33,7 @@ contract Y0 is ERC1155, Ownable {
   uint256 public constant MAX_MINT_PER_TX = 1;
 
   address public constant T1 = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // TODO: change to real address
-  address public constant T2 = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC; // TODO: change to real address
+  address public constant T2 = 0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4; // TODO: change to real address
 
   uint256 public normalCarSupply = 0;
   uint256 public rareCarSupply = 0;
