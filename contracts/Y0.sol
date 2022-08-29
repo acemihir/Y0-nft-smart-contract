@@ -92,7 +92,8 @@ contract Y0 is ERC1155, Ownable {
    */
   function claimTo(address _to, uint256 _num, uint256 _mintType) external payable {
     require(isPaused, 'Mint is not active');
-    require(_num > 0 && _num <= MAX_MINT_PER_TX, 'Number of mint cannot be less than 1 and more than maximal number of mint per transaction');
+    // require(_num > 0 && _num <= MAX_MINT_PER_TX, 'Number of mint cannot be less than 1 and more than maximal number of mint per transaction');
+    require(_num > 0, 'Number of mint cannot be less than 1 mint per transaction');
 
     if (_mintType == 1) {
       // Normal type NFT
@@ -164,7 +165,7 @@ contract Y0 is ERC1155, Ownable {
     string memory errorMessage = "";
 
     if (!isPaused) {errorMessage = "Mint is not active";}
-    if (_num > MAX_MINT_PER_TX) {errorMessage = "Number of mint cannot be more than maximal number of mint per wallet";}
+    // if (_num > MAX_MINT_PER_TX) {errorMessage = "Number of mint cannot be more than maximal number of mint per wallet";}
 
     if (_mintType == 1) {
       // Normal type NFT
