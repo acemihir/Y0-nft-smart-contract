@@ -15,9 +15,12 @@ async function main() {
 	// await hre.run('compile');
 
 	// We get the contract to deploy
+	console.log("Ready to deploy contract");
 	const Y0 = await hre.ethers.getContractFactory('Y0');
+	console.log('Ready to deploy on : ', process.env.TOKENS_URI);
 	const y0 = await Y0.deploy(process.env.TOKENS_URI);
 
+	console.log('Deploying ....');
 	await y0.deployed();
 
 	console.log('Contract deployed to:', y0.address);
