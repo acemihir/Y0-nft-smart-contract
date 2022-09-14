@@ -26,10 +26,10 @@ contract Y0 is ERC721URIStorage, Ownable {
     uint256 public constant SUPER_CAR_PRICE = 0.0033 ether;
     uint256 public constant EXTRA_CAR_PRICE = 0.0044 ether; 
 
-    uint256 public constant MAX_SUPPLY_NORMAL = 1600;
-    uint256 public constant MAX_SUPPLY_RARE = 400;
-    uint256 public constant MAX_SUPPLY_SUPER = 200;
-    uint256 public constant MAX_SUPPLY_EXTRA = 22;
+    uint256 public constant MAX_SUPPLY_NORMAL = 4400;
+    uint256 public constant MAX_SUPPLY_RARE = 3300;
+    uint256 public constant MAX_SUPPLY_SUPER = 2200;
+    uint256 public constant MAX_SUPPLY_EXTRA = 1100;
 
     uint256 public normalCarSupply = 0;
     uint256 public rareCarSupply = 0;
@@ -108,10 +108,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(msg.value == NORMAL_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
 
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, normalCarSupply);
+                _safeMint(_to, normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(normalCarSupply))) : "";
-                _setTokenURI(normalCarSupply, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1))) : "";
+                _setTokenURI(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1, tokenURI);
                 normalCarSupply ++;
                 _totalCount.increment();
             }
@@ -122,10 +122,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(msg.value == RARE_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
             
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, rareCarSupply + MAX_SUPPLY_NORMAL);
+                _safeMint(_to, rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(rareCarSupply + MAX_SUPPLY_NORMAL))) : "";
-                _setTokenURI(rareCarSupply + MAX_SUPPLY_NORMAL, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1))) : "";
+                _setTokenURI(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 rareCarSupply ++;
                 _totalCount.increment();
             }
@@ -136,10 +136,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(msg.value == SUPER_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
             
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, superCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE);
+                _safeMint(_to, superCarSupply + MAX_SUPPLY_EXTRA + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(superCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE))) : "";
-                _setTokenURI(superCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(superCarSupply + MAX_SUPPLY_EXTRA + 1))) : "";
+                _setTokenURI(superCarSupply + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 superCarSupply ++;
                 _totalCount.increment();
             }
@@ -149,10 +149,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(msg.value == EXTRA_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
             
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, extraCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER);
+                _safeMint(_to, extraCarSupply + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(extraCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER))) : "";
-                _setTokenURI(extraCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(extraCarSupply + 1))) : "";
+                _setTokenURI(extraCarSupply + 1, tokenURI);
                 extraCarSupply ++;
                 _totalCount.increment();
             }
@@ -229,10 +229,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(normalCarSupply + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply of normal cars');
 
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, normalCarSupply);
+                _safeMint(_to, normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(normalCarSupply))) : "";
-                _setTokenURI(normalCarSupply, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1))) : "";
+                _setTokenURI(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1, tokenURI);
                 normalCarSupply ++;
                 _totalCount.increment();
             }
@@ -242,10 +242,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(rareCarSupply + _num <= MAX_SUPPLY_RARE, 'Exceeded total supply of rare cars');
             
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, rareCarSupply + MAX_SUPPLY_NORMAL);
+                _safeMint(_to, rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(rareCarSupply + MAX_SUPPLY_NORMAL))) : "";
-                _setTokenURI(rareCarSupply + MAX_SUPPLY_NORMAL, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1))) : "";
+                _setTokenURI(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 rareCarSupply ++;
                 _totalCount.increment();
             }
@@ -255,10 +255,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(superCarSupply + _num <= MAX_SUPPLY_SUPER, 'Exceeded total supply of super cars');
             
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, superCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE);
+                _safeMint(_to, superCarSupply + MAX_SUPPLY_EXTRA + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(superCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE))) : "";
-                _setTokenURI(superCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(superCarSupply + MAX_SUPPLY_EXTRA + 1))) : "";
+                _setTokenURI(superCarSupply + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 superCarSupply ++;
                 _totalCount.increment();
             }
@@ -267,10 +267,10 @@ contract Y0 is ERC721URIStorage, Ownable {
             require(extraCarSupply + _num <= MAX_SUPPLY_EXTRA, 'Exceeded total supply of extra cars');
             
             for(uint256 i = 0; i < _num; i ++) {
-                _safeMint(_to, extraCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER);
+                _safeMint(_to, extraCarSupply + 1);
                 string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(extraCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER))) : "";
-                _setTokenURI(extraCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER, tokenURI);
+                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(extraCarSupply + 1))) : "";
+                _setTokenURI(extraCarSupply + 1, tokenURI);
                 extraCarSupply ++;
                 _totalCount.increment();
             }
