@@ -5,7 +5,8 @@ describe('Y0', async function () {
 	// const name = "Y0 NFT";
 	// const symbol = "Y0 NFT";
 
-	const tokenInitUri = 'https://cool-ipfs/{id}.json';
+	// const tokenInitUri = 'https://cool-ipfs/';
+	const tokenInitUri = 'https://gateway.pinata.cloud/ipfs/QmVbB6mqQz7E81qaJHnXrPZHQmkShFw7zLoTufdFgUF57/';
 
 	beforeEach(async function () {
 		const Y0 = await ethers.getContractFactory('Y0');
@@ -132,17 +133,16 @@ describe('Y0', async function () {
 		// 	}
 		// });
 		it('Should mint if every thing is ok', async () => {
-			const tokenId = 1;
+			const _num = 1;
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
 
 			const mintPrice1 = await contract.NORMAL_CAR_PRICE();
-			await contract.connect(account1).claimTo(account1.address, tokenId, 1, {
+			await contract.connect(account1).claimTo(account1.address, _num, 1, {
 				value: mintPrice1,
 			});
 			const balanceOfAccount1 = await contract.balanceOf(
 				account1.address,
-				tokenId
 			);
 			expect(balanceOfAccount1).to.equal(1);
 		});
@@ -188,13 +188,12 @@ describe('Y0', async function () {
 			expect(await contract.extraCarSupply()).to.be.equal(prevSupply);
 		});
 		it('Should mint if every thing is ok', async () => {
-			const tokenId = 1;
+			const _num = 1;
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			await contract.connect(owner).mintByOwner(account1.address, tokenId, 1);
+			await contract.connect(owner).mintByOwner(account1.address, _num, 1);
 			const balanceOfAccount1 = await contract.balanceOf(
 				account1.address,
-				tokenId
 			);
 			expect(balanceOfAccount1).to.equal(1);
 		});
