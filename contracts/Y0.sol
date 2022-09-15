@@ -7,6 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 // TO DO: Explain the reason/advantadge to use ERC721URIStorage instead of ERC721 itself
+/**
+*  While mint the nft, ERC721 store token uri based the base token uri by adding the tokenId.
+*  But to update the token metadata after minting, we use the ERC721URIStorage to set the token uri manually.
+*/
+
 contract Y0 is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _totalCount;
