@@ -53,45 +53,6 @@ describe('Y0', async function () {
 				expect(err.toString()).to.include('Mint is not active');
 			}
 		});
-		// it('Should return an error if _num >= MAX_MINT_PER_TX', async () => {
-		// 	await contract.connect(owner).setIsActive(true);
-		// 	const MAX_MINT_PER_TX = await contract.MAX_MINT_PER_TX();
-		// 	const overflowMintNumber = MAX_MINT_PER_TX.add(
-		// 		ethers.BigNumber.from('1')
-		// 	);
-		// 	try {
-		// 		await contract
-		// 			.connect(account1)
-		// 			.claimTo(account1.address, overflowMintNumber, 1);
-		// 		assert.fail(0, 1, 'Exception not thrown');
-		// 	} catch (err) {
-		// 		expect(err.toString()).to.include(
-		// 			'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
-		// 		);
-		// 	}
-		// });
-		it('Should return an error if we mint more than supply for a certain type', async () => {
-			// Enable mint
-			await contract.connect(owner).setIsActive(true);
-			// Get max Supply for type 4
-			const maxSupply4 = await contract.MAX_SUPPLY_EXTRA();
-			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
-			const overflowSupply = maxSupply4 + 1;
-			try {
-				let i = 0;
-				while (i < overflowSupply) {
-					await contract.connect(account1).claimTo(account1.address, 1, 4, {
-						value: mintPrice4,
-					});
-					i++;
-				}
-				assert.fail(0, 1, 'Exception not thrown');
-			} catch (err) {
-				expect(err.toString()).to.include(
-					'Exceeded total supply of extra cars'
-				);
-			}
-		});
 		it('Should return an error if we mint with not enough ETH', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
@@ -107,31 +68,21 @@ describe('Y0', async function () {
 				);
 			}
 		});
-		// it('Should return an error if we mint with 0 amount', async () => {
-		// 	// Enable mint
-		// 	await contract.connect(owner).setIsActive(true);
-		// 	const mintPrice4 = await contract.EXTRA_CAR_PRICE();
-		// 	try {
-		// 		await contract.connect(account1).claimTo(account1.address, 0, 4);
-		// 		assert.fail(0, 1, 'Exception not thrown');
-		// 	} catch (err) {
-		// 		expect(err.toString()).to.include(
-		// 			'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
-		// 		);
-		// 	}
-		// });
-		// it('Should return an error if we mint more than max mint per transaction', async () => {
-		// 	// Enable mint
-		// 	await contract.connect(owner).setIsActive(true);
-		// 	try {
-		// 		await contract.connect(account1).claimTo(account1.address, 2, 4);
-		// 		assert.fail(0, 1, 'Exception not thrown');
-		// 	} catch (err) {
-		// 		expect(err.toString()).to.include(
-		// 			'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
-		// 		);
-		// 	}
-		// });
+		it('Should return an error if we mint with 0 amount', async () => {
+			// Enable mint
+			await contract.connect(owner).setIsActive(true);
+			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
+			try {
+				await contract.connect(account1).claimTo(account1.address, 0, 4, {
+					value: 0
+				});
+				assert.fail(0, 1, 'Exception not thrown');
+			} catch (err) {
+				expect(err.toString()).to.include(
+					'Number of mint cannot be less than 1 mint or greater than 10 mints per transaction'
+				);
+			}
+		});
 		it('Should mint if every thing is ok', async () => {
 			const _num = 1;
 			// Enable mint
@@ -154,24 +105,6 @@ describe('Y0', async function () {
 				await contract.connect(account1).mintByOwner(account1.address, 1, 4);
 			} catch (err) {
 				expect(err.toString()).to.include('Ownable: caller is not the owner');
-			}
-		});
-		it('Should return an error if we mint more than supply for a certain type', async () => {
-			// Enable mint
-			await contract.connect(owner).setIsActive(true);
-			// Get max Supply for type 4
-			const maxSupply4 = await contract.MAX_SUPPLY_EXTRA();
-			const overflowSupply = maxSupply4 + 1;
-
-			try {
-				await contract
-					.connect(owner)
-					.mintByOwner(account1.address, overflowSupply, 4);
-				assert.fail(0, 1, 'Exception not thrown');
-			} catch (err) {
-				expect(err.toString()).to.include(
-					'Exceeded total supply of extra cars'
-				);
 			}
 		});
 		it('Should return an error if we mint -1 amount of token', async () => {

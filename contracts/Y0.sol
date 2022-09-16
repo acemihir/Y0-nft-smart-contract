@@ -105,18 +105,15 @@ contract Y0 is ERC721URIStorage, Ownable {
     function claimTo(address _to, uint256 _num, uint256 _mintType) external payable {
         require(isPaused, 'Mint is not active');
         // require(_num > 0 && _num <= MAX_MINT_PER_TX, 'Number of mint cannot be less than 1 and more than maximal number of mint per transaction');
-        require(_num > 0, 'Number of mint cannot be less than 1 mint per transaction');
+        require(_num > 0 && _num < 11, 'Number of mint cannot be less than 1 mint or greater than 10 mints per transaction');
 
         if (_mintType == 1) {
             // Normal type NFT
             require(normalCarSupply + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply of normal cars');
-            require(msg.value == NORMAL_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
+            require(msg.value >= NORMAL_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
 
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1))) : "";
-                _setTokenURI(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1, tokenURI);
                 normalCarSupply ++;
                 _totalCount.increment();
             }
@@ -124,13 +121,10 @@ contract Y0 is ERC721URIStorage, Ownable {
         } else if (_mintType == 2) {
             // Rare type NFT
             require(rareCarSupply + _num <= MAX_SUPPLY_RARE, 'Exceeded total supply of rare cars');
-            require(msg.value == RARE_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
+            require(msg.value >= RARE_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
             
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1))) : "";
-                _setTokenURI(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 rareCarSupply ++;
                 _totalCount.increment();
             }
@@ -138,26 +132,20 @@ contract Y0 is ERC721URIStorage, Ownable {
         } else if (_mintType == 3) {
             // Super type NFT
             require(superCarSupply + _num <= MAX_SUPPLY_SUPER, 'Exceeded total supply of super cars');
-            require(msg.value == SUPER_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
+            require(msg.value >= SUPER_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
             
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, superCarSupply + MAX_SUPPLY_EXTRA + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(superCarSupply + MAX_SUPPLY_EXTRA + 1))) : "";
-                _setTokenURI(superCarSupply + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 superCarSupply ++;
                 _totalCount.increment();
             }
         } else if (_mintType == 4) {
             // Extra type NFT
             require(extraCarSupply + _num <= MAX_SUPPLY_EXTRA, 'Exceeded total supply of extra cars');
-            require(msg.value == EXTRA_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
+            require(msg.value >= EXTRA_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
             
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, extraCarSupply + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(extraCarSupply + 1))) : "";
-                _setTokenURI(extraCarSupply + 1, tokenURI);
                 extraCarSupply ++;
                 _totalCount.increment();
             }
@@ -227,7 +215,7 @@ contract Y0 is ERC721URIStorage, Ownable {
     function mintByOwner(address _to, uint256 _num, uint256 _mintType) external onlyOwner {
         require(isPaused, 'Mint is not active');
         // require(_num > 0 && _num <= MAX_MINT_PER_TX, 'Number of mint cannot be less than 1 and more than maximal number of mint per transaction');
-        require(_num > 0, 'Number of mint cannot be less than 1 mint per transaction');
+        require(_num > 0 && _num < 11, 'Number of mint cannot be less than 1 mint or greater than 10 mints per transaction');
 
         if (_mintType == 1) {
             // Normal type NFT
@@ -235,9 +223,6 @@ contract Y0 is ERC721URIStorage, Ownable {
 
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1))) : "";
-                _setTokenURI(normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER +  MAX_SUPPLY_EXTRA + 1, tokenURI);
                 normalCarSupply ++;
                 _totalCount.increment();
             }
@@ -248,9 +233,6 @@ contract Y0 is ERC721URIStorage, Ownable {
             
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1))) : "";
-                _setTokenURI(rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 rareCarSupply ++;
                 _totalCount.increment();
             }
@@ -261,9 +243,6 @@ contract Y0 is ERC721URIStorage, Ownable {
             
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, superCarSupply + MAX_SUPPLY_EXTRA + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(superCarSupply + MAX_SUPPLY_EXTRA + 1))) : "";
-                _setTokenURI(superCarSupply + MAX_SUPPLY_EXTRA + 1, tokenURI);
                 superCarSupply ++;
                 _totalCount.increment();
             }
@@ -273,9 +252,6 @@ contract Y0 is ERC721URIStorage, Ownable {
             
             for(uint256 i = 0; i < _num; i ++) {
                 _safeMint(_to, extraCarSupply + 1);
-                string memory baseURI = _baseURI();
-                string memory tokenURI = bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, Strings.toString(extraCarSupply + 1))) : "";
-                _setTokenURI(extraCarSupply + 1, tokenURI);
                 extraCarSupply ++;
                 _totalCount.increment();
             }
