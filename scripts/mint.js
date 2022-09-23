@@ -32,8 +32,8 @@ async function main() {
 
   console.log("Minting start!")
   for(let i = 0; i < friends.length; i++) {
-    await Y0.mintByOwner(friends[i], 1, 1);
-    console.log("Airdrop 1 nft of first type to " + friends[i])
+    await Y0.mintByOwner(friends[i].address, friends[i].num, friends[i].type);
+    console.log("Airdrop " + friends[i].num + " nft of " + friends[i].type + " type to " + friends[i].address)
   }
 
   console.log("Minting is complete!");
