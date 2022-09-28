@@ -6,7 +6,8 @@ describe('Y0', async function () {
 	// const symbol = "Y0 NFT";
 
 	// const tokenInitUri = 'https://cool-ipfs/';
-	const tokenInitUri = 'https://gateway.pinata.cloud/ipfs/QmVbB6mqQz7E81qaJHnXrPZHQmkShFw7zLoTufdFgUF57/';
+	const tokenInitUri =
+		'https://gateway.pinata.cloud/ipfs/QmVbB6mqQz7E81qaJHnXrPZHQmkShFw7zLoTufdFgUF57/';
 
 	beforeEach(async function () {
 		const Y0 = await ethers.getContractFactory('Y0');
@@ -53,6 +54,28 @@ describe('Y0', async function () {
 				expect(err.toString()).to.include('Mint is not active');
 			}
 		});
+		it('Should return an error if we mint more than supply for a certain type', async () => {
+			// Enable mint
+			await contract.connect(owner).setIsActive(true);
+			// Get max Supply for type 4
+			const maxSupply4 = await contract.MAX_SUPPLY_EXTRA();
+			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
+			const overflowSupply = maxSupply4 + 1;
+			try {
+				let i = 0;
+				while (i < overflowSupply) {
+					await contract.connect(account1).claimTo(account1.address, 1, 4, {
+						value: mintPrice4,
+					});
+					i++;
+				}
+				assert.fail(0, 1, 'Exception not thrown');
+			} catch (err) {
+				expect(err.toString()).to.include(
+					'Exceeded total supply of extra cars'
+				);
+			}
+		});
 		it('Should return an error if we mint with not enough ETH', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
@@ -74,12 +97,27 @@ describe('Y0', async function () {
 			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
 			try {
 				await contract.connect(account1).claimTo(account1.address, 0, 4, {
-					value: 0
+					value: 0,
 				});
 				assert.fail(0, 1, 'Exception not thrown');
 			} catch (err) {
 				expect(err.toString()).to.include(
-					'Number of mint cannot be less than 1 mint or greater than 10 mints per transaction'
+					'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
+				);
+			}
+		});
+		it('Should return an error if we mint with 11 amount', async () => {
+			// Enable mint
+			await contract.connect(owner).setIsActive(true);
+			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
+			try {
+				await contract.connect(account1).claimTo(account1.address, 11, 4, {
+					value: 0,
+				});
+				assert.fail(0, 1, 'Exception not thrown');
+			} catch (err) {
+				expect(err.toString()).to.include(
+					'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
 				);
 			}
 		});
@@ -92,9 +130,7 @@ describe('Y0', async function () {
 			await contract.connect(account1).claimTo(account1.address, _num, 1, {
 				value: mintPrice1,
 			});
-			const balanceOfAccount1 = await contract.balanceOf(
-				account1.address,
-			);
+			const balanceOfAccount1 = await contract.balanceOf(account1.address);
 			expect(balanceOfAccount1).to.equal(1);
 		});
 	});
@@ -125,9 +161,7 @@ describe('Y0', async function () {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
 			await contract.connect(owner).mintByOwner(account1.address, _num, 1);
-			const balanceOfAccount1 = await contract.balanceOf(
-				account1.address,
-			);
+			const balanceOfAccount1 = await contract.balanceOf(account1.address);
 			expect(balanceOfAccount1).to.equal(1);
 		});
 	});
