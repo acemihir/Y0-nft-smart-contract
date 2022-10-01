@@ -40,11 +40,7 @@ contract Y0 is ERC721, Ownable {
     address public constant T1 = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // TODO: change to real address
     address public constant T2 = 0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4; // TODO: change to real address
 
-    uint256 public zeroCarSupply = 0;
-    uint256 public normalCarSupply = 0;
-    uint256 public rareCarSupply = 0;
-    uint256 public superCarSupply = 0;
-    uint256 public extraCarSupply = 0;
+    uint256[5] public tierCarSupply = [0, 0, 0, 0, 0];
 
     bool public isPaused = false;
     bool public isMetadataLocked = false;
@@ -52,6 +48,12 @@ contract Y0 is ERC721, Ownable {
     Counters.Counter private _totalSupply;
 
     string private _baseTokenURI;
+
+    // -------- Events --------
+    event IsActived(bool _isActive);
+    event Paused();
+    event MetadataUpdated(string indexed _newBaseURI);
+    event MetadataLocked();
 
     constructor (string memory baseURI) ERC721("Y0", "Y0") {
         updateBaseURI(baseURI);
@@ -63,6 +65,7 @@ contract Y0 is ERC721, Ownable {
      */
     function setIsActive(bool _isActive) external onlyOwner {
         isPaused = _isActive;
+        emit IsActived(_isActive);
     }
 
     /**
@@ -70,6 +73,7 @@ contract Y0 is ERC721, Ownable {
      */
     function pause() external onlyOwner {
         isPaused = true;
+        emit Paused();
     }
 
     /**
@@ -92,6 +96,7 @@ contract Y0 is ERC721, Ownable {
     function updateBaseURI(string memory _newBaseURI) public onlyOwner {
         require(!isMetadataLocked, "Metadata ownership renounced!");
         _baseTokenURI = _newBaseURI;
+        emit MetadataUpdated(_baseTokenURI);
     }
 
     /**
@@ -99,6 +104,28 @@ contract Y0 is ERC721, Ownable {
      */
     function lockMetadata() external onlyOwner {
         isMetadataLocked = true;
+        emit MetadataLocked();
+    }
+
+    /**
+      * @notice Mint `_num` tokens for public
+     */
+    function _mintLoopPublic(address _to, uint256 _num, uint256 _mintType, uint256 _maxSupplyTier, uint256 _tierCarPrice, uint256 _maxSupplyTierPad) internal {
+        require(msg.value >= _tierCarPrice * _num, 'Ether Value sent is not the right amount');
+        _mintLoop(_to, _num, _mintType, _maxSupplyTier, _maxSupplyTierPad);
+    }
+
+    /**
+      * @notice Mint `_num` tokens
+     */
+    function _mintLoop(address _to, uint256 _num, uint256 _mintType, uint256 _maxSupplyTier, uint256 _maxSupplyTierPad) internal {
+        require(tierCarSupply[_mintType] + _num <= _maxSupplyTier, 'Exceeded total supply of NFTs of this tier');
+
+        for (uint256 i = 0; i < _num; i++) {
+            _safeMint(_to, tierCarSupply[_mintType] + _maxSupplyTierPad + 1);
+            tierCarSupply[_mintType]++;
+            _totalSupply.increment();
+        }
     }
 
     /**
@@ -113,58 +140,24 @@ contract Y0 is ERC721, Ownable {
 
         if (_mintType == 0) {
             // Zero type NFT
-            require(zeroCarSupply + _num <= MAX_SUPPLY_ZERO, 'Exceeded total supply of zero NFTs');
-            require(msg.value >= ZERO_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
+            _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_ZERO, ZERO_CAR_PRICE, MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);  
 
-            for(uint256 i = 0; i < _num; i++) {
-                _safeMint(_to, normalCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                zeroCarSupply++;
-                _totalSupply.increment();
-            }
-
-        }   
-        else if (_mintType == 1) {
+        } else if (_mintType == 1) {
             // Normal type NFT
-            require(normalCarSupply + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply of normal cars');
-            require(msg.value >= NORMAL_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
-
-            for(uint256 i = 0; i < _num; i++) {
-                _safeMint(_to, normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                normalCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_NORMAL, NORMAL_CAR_PRICE, MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
         } else if (_mintType == 2) {
             // Rare type NFT
-            require(rareCarSupply + _num <= MAX_SUPPLY_RARE, 'Exceeded total supply of rare cars');
-            require(msg.value >= RARE_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
-            
-            for(uint256 i = 0; i < _num; i++) {
-                _safeMint(_to, rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                rareCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_RARE, RARE_CAR_PRICE, MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
         } else if (_mintType == 3) {
             // Super type NFT
-            require(superCarSupply + _num <= MAX_SUPPLY_SUPER, 'Exceeded total supply of super cars');
-            require(msg.value >= SUPER_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
-            
-            for(uint256 i = 0; i < _num; i++) {
-                _safeMint(_to, superCarSupply + MAX_SUPPLY_EXTRA + 1);
-                superCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_SUPER, SUPER_CAR_PRICE, MAX_SUPPLY_EXTRA);
+
         } else if (_mintType == 4) {
             // Extra type NFT
-            require(extraCarSupply + _num <= MAX_SUPPLY_EXTRA, 'Exceeded total supply of extra cars');
-            require(msg.value >= EXTRA_CAR_PRICE * _num, 'Ether Value sent is not the right amount');
+            _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_EXTRA, EXTRA_CAR_PRICE, 0);
             
-            for(uint256 i = 0; i < _num; i++) {
-                _safeMint(_to, extraCarSupply + 1);
-                extraCarSupply++;
-                _totalSupply.increment();
-            }
         } else {
             require(false, 'This category doesnt exist');
         }
@@ -209,23 +202,23 @@ contract Y0 is ERC721, Ownable {
     function unclaimedSupply(uint256 _mintType) public view returns (uint256) {
         if (_mintType == 0) {
             // Zero type NFT
-            return MAX_SUPPLY_ZERO - zeroCarSupply;
+            return MAX_SUPPLY_ZERO - tierCarSupply[0];
 
         } else if (_mintType == 1) {
             // Normal type NFT
-            return MAX_SUPPLY_NORMAL - normalCarSupply;
+            return MAX_SUPPLY_NORMAL - tierCarSupply[1];
 
         } else if (_mintType == 2) {
             // Rare type NFT
-            return MAX_SUPPLY_RARE -  rareCarSupply;
+            return MAX_SUPPLY_RARE -  tierCarSupply[2];
 
         } else if (_mintType == 3) {
             // Super type NFT
-            return MAX_SUPPLY_SUPER - superCarSupply;
+            return MAX_SUPPLY_SUPER - tierCarSupply[3];
 
         } else if (_mintType == 4) {
             // Extra type NFT
-            return MAX_SUPPLY_EXTRA - extraCarSupply;
+            return MAX_SUPPLY_EXTRA - tierCarSupply[4];
         }
         return 0;
     }
@@ -242,52 +235,24 @@ contract Y0 is ERC721, Ownable {
 
         if (_mintType == 0) {
             // Zero type NFT
-            require(zeroCarSupply + _num <= MAX_SUPPLY_ZERO, 'Exceeded total supply of zero NFTs');
-            for(uint256 i = 0; i < _num; i++) {
-                _mint(_to, normalCarSupply + MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                zeroCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoop(_to, _num, _mintType, MAX_SUPPLY_ZERO, MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);  
 
-        }   
-        else if (_mintType == 1) {
+        } else if (_mintType == 1) {
             // Normal type NFT
-            require(normalCarSupply + _num <= MAX_SUPPLY_NORMAL, 'Exceeded total supply of normal cars');
-
-            for(uint256 i = 0; i < _num; i++) {
-                _mint(_to, normalCarSupply + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                normalCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoop(_to, _num, _mintType, MAX_SUPPLY_NORMAL, MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
         } else if (_mintType == 2) {
             // Rare type NFT
-            require(rareCarSupply + _num <= MAX_SUPPLY_RARE, 'Exceeded total supply of rare cars');
-            
-            for(uint256 i = 0; i < _num; i++) {
-                _mint(_to, rareCarSupply + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA + 1);
-                rareCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoop(_to, _num, _mintType, MAX_SUPPLY_RARE, MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
         } else if (_mintType == 3) {
             // Super type NFT
-            require(superCarSupply + _num <= MAX_SUPPLY_SUPER, 'Exceeded total supply of super cars');
-            
-            for(uint256 i = 0; i < _num; i++) {
-                _mint(_to, superCarSupply + MAX_SUPPLY_EXTRA + 1);
-                superCarSupply++;
-                _totalSupply.increment();
-            }
+            _mintLoop(_to, _num, _mintType, MAX_SUPPLY_SUPER, MAX_SUPPLY_EXTRA);
+
         } else if (_mintType == 4) {
             // Extra type NFT
-            require(extraCarSupply + _num <= MAX_SUPPLY_EXTRA, 'Exceeded total supply of extra cars');
+            _mintLoop(_to, _num, _mintType, MAX_SUPPLY_EXTRA, 0);
             
-            for(uint256 i = 0; i < _num; i++) {
-                _mint(_to, extraCarSupply + 1);
-                extraCarSupply++;
-                _totalSupply.increment();
-            }
         } else {
             require(false, 'This category doesnt exist');
         }
