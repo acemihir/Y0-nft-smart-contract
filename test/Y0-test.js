@@ -253,7 +253,7 @@ describe('Y0', async function () {
 		it('Should return an error if we mint -1 amount of token', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			const prevSupply = await contract.extraCarSupply();
+			const prevSupply = await contract.tierCarSupply(4);
 
 			try {
 				await contract.connect(owner).mintByOwner(account1.address, -1, 4);
@@ -261,7 +261,7 @@ describe('Y0', async function () {
 			} catch (err) {
 				expect(err.toString()).to.include('value out-of-bounds');
 			}
-			expect(await contract.extraCarSupply()).to.be.equal(prevSupply);
+			expect(await contract.tierCarSupply(4)).to.be.equal(prevSupply);
 		});
 		it('Should mint if every thing is ok', async () => {
 			const _num = 1;
