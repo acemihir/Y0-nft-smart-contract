@@ -6,7 +6,8 @@ describe('Y0', async function () {
 	// const symbol = "Y0 NFT";
 
 	// const tokenInitUri = 'https://cool-ipfs/';
-	const tokenInitUri = 'https://gateway.pinata.cloud/ipfs/QmVbB6mqQz7E81qaJHnXrPZHQmkShFw7zLoTufdFgUF57/';
+	const tokenInitUri =
+		'https://gateway.pinata.cloud/ipfs/QmVbB6mqQz7E81qaJHnXrPZHQmkShFw7zLoTufdFgUF57/';
 
 	beforeEach(async function () {
 		const Y0 = await ethers.getContractFactory('Y0');
@@ -53,6 +54,135 @@ describe('Y0', async function () {
 				expect(err.toString()).to.include('Mint is not active');
 			}
 		});
+		it('Should mint a certain amount of tokens', async () => {
+			const _num = 10;
+			// Enable mint
+			await contract.connect(owner).setIsActive(true);
+
+			const mintPrice1 = (await contract.ZERO_CAR_PRICE()) * 10;
+			await contract.connect(account1).claimTo(account1.address, _num, 0, {
+				value: mintPrice1,
+			});
+			const balanceOfAccount1 = await contract.balanceOf(account1.address);
+			expect(balanceOfAccount1).to.equal(10);
+			const zeroCarSupply = await contract.tierCarSupply(0);
+			expect(zeroCarSupply).to.equal(10);
+			const totalSupply = await contract.totalSupply();
+			expect(totalSupply).to.equal(10);
+		});
+		it('Should have the right token uri', async () => {
+			// Enable mint
+			await contract.connect(owner).setIsActive(true);
+
+			const mintPrice1 = await contract.ZERO_CAR_PRICE();
+			const mintPrice2 = await contract.NORMAL_CAR_PRICE();
+			const mintPrice3 = await contract.RARE_CAR_PRICE();
+			const mintPrice4 = await contract.SUPER_CAR_PRICE();
+			const mintPrice5 = await contract.EXTRA_CAR_PRICE();
+
+			let id = 11001;
+			let uri;
+			await expect(contract.tokenURI(id)).to.revertedWith(
+				'ERC721: invalid token ID'
+			);
+			await contract.connect(account1).claimTo(account1.address, 1, 0, {
+				value: mintPrice1,
+			});
+			uri = await contract.tokenURI(id);
+			expect(uri).to.equal(tokenInitUri + `${id}`);
+
+			id = 6601;
+			await expect(contract.tokenURI(id)).to.revertedWith(
+				'ERC721: invalid token ID'
+			);
+			await contract.connect(account1).claimTo(account1.address, 1, 1, {
+				value: mintPrice2,
+			});
+			uri = await contract.tokenURI(id);
+			expect(uri).to.equal(tokenInitUri + `${id}`);
+
+			id = 3301;
+			await expect(contract.tokenURI(id)).to.revertedWith(
+				'ERC721: invalid token ID'
+			);
+			await contract.connect(account1).claimTo(account1.address, 1, 2, {
+				value: mintPrice3,
+			});
+			uri = await contract.tokenURI(id);
+			expect(uri).to.equal(tokenInitUri + `${id}`);
+
+			id = 1101;
+			await expect(contract.tokenURI(id)).to.revertedWith(
+				'ERC721: invalid token ID'
+			);
+			await contract.connect(account1).claimTo(account1.address, 1, 3, {
+				value: mintPrice4,
+			});
+			uri = await contract.tokenURI(id);
+			expect(uri).to.equal(tokenInitUri + `${id}`);
+
+			id = 1;
+			await expect(contract.tokenURI(id)).to.revertedWith(
+				'ERC721: invalid token ID'
+			);
+			await contract.connect(account1).claimTo(account1.address, 1, 4, {
+				value: mintPrice5,
+			});
+			uri = await contract.tokenURI(id);
+			expect(uri).to.equal(tokenInitUri + `${id}`);
+
+			const balanceOfAccount1 = await contract.balanceOf(account1.address);
+			expect(balanceOfAccount1).to.equal(5);
+		});
+		// it('Should return an error if we mint more than supply for a certain type', async () => {
+		// 	// Enable mint
+		// 	await contract.connect(owner).setIsActive(true);
+		// 	// Get max Supply for type 4
+		// 	const maxSupply0 = await contract.MAX_SUPPLY_ZERO();
+		// 	const mintPrice0 = await contract.ZERO_CAR_PRICE();
+		// 	const overflowSupply = maxSupply0 + 1;
+
+		// 	try {
+		// 		let i = 0;
+		// 		while (i < overflowSupply) {
+		// 			await contract.connect(account1).claimTo(account1.address, 1, 0, {
+		// 				value: mintPrice0,
+		// 			});
+		// 			i++;
+		// 		}
+		// 		assert.fail(0, 1, 'Exception not thrown');
+		// 	} catch (err) {
+		// 		expect(err.toString()).to.include(
+		// 			'Exceeded total supply of NFTs of this tier'
+		// 		);
+		// 		const tokenBalanceOfAccount1 = await contract.balanceOf(
+		// 			account1.address
+		// 		);
+		// 		expect(tokenBalanceOfAccount1).to.equal(maxSupply0);
+		// 	}
+		// });
+		// it('Should return an error if we mint more than supply for a certain type', async () => {
+		// 	// Enable mint
+		// 	await contract.connect(owner).setIsActive(true);
+		// 	// Get max Supply for type 4
+		// 	const maxSupply4 = await contract.MAX_SUPPLY_EXTRA();
+		// 	const mintPrice4 = await contract.EXTRA_CAR_PRICE();
+		// 	const overflowSupply = maxSupply4 + 1;
+		// 	try {
+		// 		let i = 0;
+		// 		while (i < overflowSupply) {
+		// 			await contract.connect(account1).claimTo(account1.address, 1, 4, {
+		// 				value: mintPrice4,
+		// 			});
+		// 			i++;
+		// 		}
+		// 		assert.fail(0, 1, 'Exception not thrown');
+		// 	} catch (err) {
+		// 		expect(err.toString()).to.include(
+		// 			'Exceeded total supply of extra cars'
+		// 		);
+		// 	}
+		// });
 		it('Should return an error if we mint with not enough ETH', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
@@ -74,12 +204,27 @@ describe('Y0', async function () {
 			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
 			try {
 				await contract.connect(account1).claimTo(account1.address, 0, 4, {
-					value: 0
+					value: 0,
 				});
 				assert.fail(0, 1, 'Exception not thrown');
 			} catch (err) {
 				expect(err.toString()).to.include(
-					'Number of mint cannot be less than 1 mint or greater than 10 mints per transaction'
+					'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
+				);
+			}
+		});
+		it('Should return an error if we mint with 11 amount', async () => {
+			// Enable mint
+			await contract.connect(owner).setIsActive(true);
+			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
+			try {
+				await contract.connect(account1).claimTo(account1.address, 11, 4, {
+					value: 0,
+				});
+				assert.fail(0, 1, 'Exception not thrown');
+			} catch (err) {
+				expect(err.toString()).to.include(
+					'Number of mint cannot be less than 1 and more than maximal number of mint per transaction'
 				);
 			}
 		});
@@ -92,9 +237,7 @@ describe('Y0', async function () {
 			await contract.connect(account1).claimTo(account1.address, _num, 1, {
 				value: mintPrice1,
 			});
-			const balanceOfAccount1 = await contract.balanceOf(
-				account1.address,
-			);
+			const balanceOfAccount1 = await contract.balanceOf(account1.address);
 			expect(balanceOfAccount1).to.equal(1);
 		});
 	});
@@ -110,7 +253,7 @@ describe('Y0', async function () {
 		it('Should return an error if we mint -1 amount of token', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			const prevSupply = await contract.extraCarSupply();
+			const prevSupply = await contract.tierCarSupply(4);
 
 			try {
 				await contract.connect(owner).mintByOwner(account1.address, -1, 4);
@@ -118,16 +261,14 @@ describe('Y0', async function () {
 			} catch (err) {
 				expect(err.toString()).to.include('value out-of-bounds');
 			}
-			expect(await contract.extraCarSupply()).to.be.equal(prevSupply);
+			expect(await contract.tierCarSupply(4)).to.be.equal(prevSupply);
 		});
 		it('Should mint if every thing is ok', async () => {
 			const _num = 1;
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
 			await contract.connect(owner).mintByOwner(account1.address, _num, 1);
-			const balanceOfAccount1 = await contract.balanceOf(
-				account1.address,
-			);
+			const balanceOfAccount1 = await contract.balanceOf(account1.address);
 			expect(balanceOfAccount1).to.equal(1);
 		});
 	});
