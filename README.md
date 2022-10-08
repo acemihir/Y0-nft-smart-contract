@@ -23,7 +23,7 @@ TOKENS_URI="https://gateway.pinata.cloud/ipfs/HASH"
 
 ########### TEST NET SETTINGS #################
 
-INFURA_TESTNET_URI="https://rinkeby.infura.io/v3/HASH"
+INFURA_TESTNET_URI="https://goerli.infura.io/v3/HASH"
 
 TESTNET_PRIVATE_KEY="YOUR_METAMASK_PRIVATE_KEY"
 
