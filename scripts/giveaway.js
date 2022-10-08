@@ -6,21 +6,21 @@
  */
 
 const friends = [{
-        address: "0xED73B318fd09AD932E0630eacBB27648BD018113",
+        address: "0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4",
         num: 1,
         type: 1
     },{
-        address: "0xb0c1e53c7aF763DE8bC669E5C63Ae8EB6b8F8b43",
+        address: "0x2482c0A3196fafA2C88769087bfb7b9C2e80b1dd",
         num: 1,
-        type: 1
+        type: 2
     },{
-        address: "0x176B6eB693792Ad7081E25B537D8E14bea130Ff8",
+        address: "0x20ADB97C2b2C67FCc2B8BcA8c54825379597681f",
         num: 1,
-        type: 1
+        type: 3
     },
 ];
 // Contract address
-const contractAddress = "0xdf3737a09E5D2bce4AaDbaB98c7cb2932f7c7dC2";
+const contractAddress = "0x2e474737900ab9522a742ac18BFf80808D6811dc";
 
 async function main() {
   const Y0 = await hre.ethers.getContractAt('Y0', contractAddress);
