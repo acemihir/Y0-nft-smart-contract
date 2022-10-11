@@ -40,6 +40,7 @@ contract Y0 is ERC721, Ownable {
     address public constant LEDGER1 = 0x2482c0A3196fafA2C88769087bfb7b9C2e80b1dd; 
     address public constant LEDGER2 = 0x20ADB97C2b2C67FCc2B8BcA8c54825379597681f;
     address public constant DEV = 0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4;
+    address public constant HOLDER = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
 
     uint256[5] public tierCarSupply = [0, 0, 0, 0, 0];
 
@@ -263,7 +264,7 @@ contract Y0 is ERC721, Ownable {
       * @notice Function to withdraw collected amount during minting by the team
      */
     function withdraw() external {
-        require(msg.sender == LEDGER1 || msg.sender == LEDGER2 || msg.sender == DEV, "Only Team can withdraw");
+        require(msg.sender == LEDGER1 || msg.sender == LEDGER2 || msg.sender == DEV || msg.sender == HOLDER, "Only Team can withdraw");
 
         uint256 balance = address(this).balance;
 

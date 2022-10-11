@@ -284,6 +284,9 @@ describe('Y0', async function () {
 		});
 		it('Should withdraw properly', async () => {
 			const tokenId = 1;
+			const LEDGER1 = '0x2482c0A3196fafA2C88769087bfb7b9C2e80b1dd'; 
+			const LEDGER2 = '0x20ADB97C2b2C67FCc2B8BcA8c54825379597681f';
+			const DEV = '0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4';
 
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
@@ -299,10 +302,13 @@ describe('Y0', async function () {
 				contract.address
 			);
 			const balanceWalletAccount1Before = await ethers.provider.getBalance(
-				account1.address
+				LEDGER1
 			);
 			const balanceWalletAccount2Before = await ethers.provider.getBalance(
-				account2.address
+				LEDGER2
+			);
+			const balanceWalletAccount3Before = await ethers.provider.getBalance(
+				DEV
 			);
 
 			// Execute withdraw
@@ -313,10 +319,13 @@ describe('Y0', async function () {
 				contract.address
 			);
 			const balanceWalletAccount1After = await ethers.provider.getBalance(
-				account1.address
+				LEDGER1
 			);
 			const balanceWalletAccount2After = await ethers.provider.getBalance(
-				account2.address
+				LEDGER2
+			);
+			const balanceWalletAccount3After = await ethers.provider.getBalance(
+				DEV
 			);
 
 			// Console prices
@@ -335,6 +344,11 @@ describe('Y0', async function () {
 			);
 			console.log('log-balanceWalletAccount2After', balanceWalletAccount2After);
 
+			console.log(
+				'log-balanceWalletAccount3Before',
+				balanceWalletAccount3Before
+			);
+			console.log('log-balanceWalletAccount3After', balanceWalletAccount3After);
 			expect(contractBalanceBefore.eq(contractBalanceAfter)).to.equal(false);
 			expect(
 				balanceWalletAccount1After.gt(balanceWalletAccount1Before)
@@ -342,14 +356,18 @@ describe('Y0', async function () {
 			// expect(
 			// 	balanceWalletAccount2After.gt(balanceWalletAccount2Before)
 			// ).to.equal(true);
-			expect(balanceWalletAccount2After).to.equal(balanceWalletAccount2Before);
+			expect(balanceWalletAccount2After.eq(balanceWalletAccount2Before)).to.equal(false);
 			expect(
 				balanceWalletAccount2After.gt(balanceWalletAccount1After)
+			).to.equal(true);
+			
+			expect(
+				balanceWalletAccount3After.gt(balanceWalletAccount3Before)
 			).to.equal(true);
 
 			// Ratio calculus wallet 1
 			const proportionFromBalanceToWallet1 = contractBalanceBefore
-				.mul(95)
+				.mul(47)
 				.div(100);
 			const diffWallet1 = balanceWalletAccount1After.sub(
 				balanceWalletAccount1Before
@@ -360,11 +378,11 @@ describe('Y0', async function () {
 			);
 			console.log('log-diffWallet1', diffWallet1);
 
-			expect(proportionFromBalanceToWallet1.gt(diffWallet1)).to.equal(true);
+			expect(proportionFromBalanceToWallet1.gt(diffWallet1)).to.equal(false);
 
 			// Ratio calculus wallet 2
 			const proportionFromBalanceToWallet2 = contractBalanceBefore
-				.mul(5)
+				.mul(48)
 				.div(100);
 			const diffWallet2 = balanceWalletAccount2After.sub(
 				balanceWalletAccount2Before
@@ -374,6 +392,23 @@ describe('Y0', async function () {
 				proportionFromBalanceToWallet2
 			);
 			console.log('log-diffWallet2', diffWallet2);
+
+			// expect(proportionFromBalanceToWallet2.eq(diffWallet2)).to.equal(true);
+
+			expect(contractBalanceAfter.eq(0)).to.equal(true);
+			
+			// Ratio calculus wallet 3
+			const proportionFromBalanceToWallet3 = contractBalanceBefore
+				.mul(5)
+				.div(100);
+			const diffWallet3 = balanceWalletAccount3After.sub(
+				balanceWalletAccount3Before
+			);
+			console.log(
+				'log-proportionFromBalanceToWallet3',
+				proportionFromBalanceToWallet3
+			);
+			console.log('log-diffWallet3', diffWallet3);
 
 			// expect(proportionFromBalanceToWallet2.eq(diffWallet2)).to.equal(true);
 
