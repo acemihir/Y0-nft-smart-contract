@@ -286,7 +286,7 @@ describe('Y0', async function () {
 			const tokenId = 1;
 			const LEDGER1 = '0x2482c0A3196fafA2C88769087bfb7b9C2e80b1dd'; 
 			const LEDGER2 = '0x20ADB97C2b2C67FCc2B8BcA8c54825379597681f';
-			const DEV = '0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4';
+			const DEV = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
 
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
@@ -363,7 +363,7 @@ describe('Y0', async function () {
 			
 			expect(
 				balanceWalletAccount3After.gt(balanceWalletAccount3Before)
-			).to.equal(true);
+			).to.equal(false);
 
 			// Ratio calculus wallet 1
 			const proportionFromBalanceToWallet1 = contractBalanceBefore
