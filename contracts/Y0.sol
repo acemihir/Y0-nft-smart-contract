@@ -13,7 +13,6 @@ contract Y0 is ERC721, Ownable {
     // Properties PRICE IN DEV
     // ==============================================
     
-    uint256 public constant ZERO_CAR_PRICE = 0.00001 ether;
     uint256 public constant NORMAL_CAR_PRICE = 0.0011 ether;
     uint256 public constant RARE_CAR_PRICE = 0.0022 ether;
     uint256 public constant SUPER_CAR_PRICE = 0.0033 ether;
@@ -27,7 +26,6 @@ contract Y0 is ERC721, Ownable {
     // Properties PRICE IN PRODUCTION
     // ==============================================
 
-    // uint256 public constant ZERO_CAR_PRICE = 0.07 ether;
     // uint256 public constant NORMAL_CAR_PRICE = 11 ether;
     // uint256 public constant RARE_CAR_PRICE = 22 ether;
     // uint256 public constant SUPER_CAR_PRICE = 33 ether;
@@ -37,7 +35,6 @@ contract Y0 is ERC721, Ownable {
     // address public constant LEDGER2 = 0x20ADB97C2b2C67FCc2B8BcA8c54825379597681f;
     // address public constant DEV = 0x0CA051175A0DEba6635Df8D6E2Cd8cEb8014Bda4;
 
-    uint256 public constant MAX_SUPPLY_ZERO = 5000;
     uint256 public constant MAX_SUPPLY_NORMAL = 4400;
     uint256 public constant MAX_SUPPLY_RARE = 3300;
     uint256 public constant MAX_SUPPLY_SUPER = 2200;
@@ -45,7 +42,7 @@ contract Y0 is ERC721, Ownable {
     
     uint256 public constant MAX_MINT_PER_TX = 10;
 
-    uint256[5] public tierCarSupply = [0, 0, 0, 0, 0];
+    uint256[5] public tierCarSupply = [0, 0, 0, 0];
 
     bool public isPaused = false;
     bool public isMetadataLocked = false;
@@ -144,22 +141,18 @@ contract Y0 is ERC721, Ownable {
         require(_num > 0 && _num <= MAX_MINT_PER_TX, 'Number of mint cannot be less than 1 and more than maximal number of mint per transaction');
 
         if (_mintType == 0) {
-            // Zero type NFT
-            _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_ZERO, ZERO_CAR_PRICE, MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);  
-
-        } else if (_mintType == 1) {
             // Normal type NFT
             _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_NORMAL, NORMAL_CAR_PRICE, MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
-        } else if (_mintType == 2) {
+        } else if (_mintType == 1) {
             // Rare type NFT
             _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_RARE, RARE_CAR_PRICE, MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
-        } else if (_mintType == 3) {
+        } else if (_mintType == 2) {
             // Super type NFT
             _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_SUPER, SUPER_CAR_PRICE, MAX_SUPPLY_EXTRA);
 
-        } else if (_mintType == 4) {
+        } else if (_mintType == 3) {
             // Extra type NFT
             _mintLoopPublic(_to, _num, _mintType, MAX_SUPPLY_EXTRA, EXTRA_CAR_PRICE, 0);
             
@@ -176,22 +169,18 @@ contract Y0 is ERC721, Ownable {
      */
     function price(uint256  _mintType) public pure returns (uint256) {
         if (_mintType == 0) {
-            // Zero type NFT
-            return ZERO_CAR_PRICE;
-
-        } else if (_mintType == 1) {
             // Normal type NFT
             return NORMAL_CAR_PRICE;
 
-        } else if (_mintType == 2) {
+        } else if (_mintType == 1) {
             // Rare type NFT
             return RARE_CAR_PRICE;
 
-        } else if (_mintType == 3) {
+        } else if (_mintType == 2) {
             // Super type NFT
             return SUPER_CAR_PRICE;
 
-        } else if (_mintType == 4) {
+        } else if (_mintType == 3) {
             // Extra type NFT
             return EXTRA_CAR_PRICE;
 
@@ -206,22 +195,18 @@ contract Y0 is ERC721, Ownable {
      */
     function unclaimedSupply(uint256 _mintType) public view returns (uint256) {
         if (_mintType == 0) {
-            // Zero type NFT
-            return MAX_SUPPLY_ZERO - tierCarSupply[0];
-
-        } else if (_mintType == 1) {
             // Normal type NFT
             return MAX_SUPPLY_NORMAL - tierCarSupply[1];
 
-        } else if (_mintType == 2) {
+        } else if (_mintType == 1) {
             // Rare type NFT
             return MAX_SUPPLY_RARE -  tierCarSupply[2];
 
-        } else if (_mintType == 3) {
+        } else if (_mintType == 2) {
             // Super type NFT
             return MAX_SUPPLY_SUPER - tierCarSupply[3];
 
-        } else if (_mintType == 4) {
+        } else if (_mintType == 3) {
             // Extra type NFT
             return MAX_SUPPLY_EXTRA - tierCarSupply[4];
         }
@@ -239,22 +224,18 @@ contract Y0 is ERC721, Ownable {
         require(_num > 0 && _num <= MAX_MINT_PER_TX, 'Number of mint cannot be less than 1 and more than maximal number of mint per transaction');
 
         if (_mintType == 0) {
-            // Zero type NFT
-            _mintLoop(_to, _num, _mintType, MAX_SUPPLY_ZERO, MAX_SUPPLY_NORMAL + MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);  
-
-        } else if (_mintType == 1) {
             // Normal type NFT
             _mintLoop(_to, _num, _mintType, MAX_SUPPLY_NORMAL, MAX_SUPPLY_RARE + MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
-        } else if (_mintType == 2) {
+        } else if (_mintType == 1) {
             // Rare type NFT
             _mintLoop(_to, _num, _mintType, MAX_SUPPLY_RARE, MAX_SUPPLY_SUPER + MAX_SUPPLY_EXTRA);
 
-        } else if (_mintType == 3) {
+        } else if (_mintType == 2) {
             // Super type NFT
             _mintLoop(_to, _num, _mintType, MAX_SUPPLY_SUPER, MAX_SUPPLY_EXTRA);
 
-        } else if (_mintType == 4) {
+        } else if (_mintType == 3) {
             // Extra type NFT
             _mintLoop(_to, _num, _mintType, MAX_SUPPLY_EXTRA, 0);
             

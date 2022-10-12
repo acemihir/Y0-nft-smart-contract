@@ -59,14 +59,14 @@ describe('Y0', async function () {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
 
-			const mintPrice1 = (await contract.ZERO_CAR_PRICE()) * 10;
+			const mintPrice1 = (await contract.NORMAL_CAR_PRICE()) * 10;
 			await contract.connect(account1).claimTo(account1.address, _num, 0, {
-				value: mintPrice1,
+				value: mintPrice1.toString(),
 			});
 			const balanceOfAccount1 = await contract.balanceOf(account1.address);
 			expect(balanceOfAccount1).to.equal(10);
-			const zeroCarSupply = await contract.tierCarSupply(0);
-			expect(zeroCarSupply).to.equal(10);
+			const normalCarSupply = await contract.tierCarSupply(0);
+			expect(normalCarSupply).to.equal(10);
 			const totalSupply = await contract.totalSupply();
 			expect(totalSupply).to.equal(10);
 		});
@@ -74,14 +74,13 @@ describe('Y0', async function () {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
 
-			const mintPrice1 = await contract.ZERO_CAR_PRICE();
-			const mintPrice2 = await contract.NORMAL_CAR_PRICE();
-			const mintPrice3 = await contract.RARE_CAR_PRICE();
-			const mintPrice4 = await contract.SUPER_CAR_PRICE();
-			const mintPrice5 = await contract.EXTRA_CAR_PRICE();
+			const mintPrice1 = await contract.NORMAL_CAR_PRICE();
+			const mintPrice2 = await contract.RARE_CAR_PRICE();
+			const mintPrice3 = await contract.SUPER_CAR_PRICE();
+			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
 
-			let id = 11001;
 			let uri;
+			let id = 6601;
 			await expect(contract.tokenURI(id)).to.revertedWith(
 				'ERC721: invalid token ID'
 			);
@@ -91,7 +90,7 @@ describe('Y0', async function () {
 			uri = await contract.tokenURI(id);
 			expect(uri).to.equal(tokenInitUri + `${id}`);
 
-			id = 6601;
+			id = 3301;
 			await expect(contract.tokenURI(id)).to.revertedWith(
 				'ERC721: invalid token ID'
 			);
@@ -101,7 +100,7 @@ describe('Y0', async function () {
 			uri = await contract.tokenURI(id);
 			expect(uri).to.equal(tokenInitUri + `${id}`);
 
-			id = 3301;
+			id = 1101;
 			await expect(contract.tokenURI(id)).to.revertedWith(
 				'ERC721: invalid token ID'
 			);
@@ -111,7 +110,7 @@ describe('Y0', async function () {
 			uri = await contract.tokenURI(id);
 			expect(uri).to.equal(tokenInitUri + `${id}`);
 
-			id = 1101;
+			id = 1;
 			await expect(contract.tokenURI(id)).to.revertedWith(
 				'ERC721: invalid token ID'
 			);
@@ -121,18 +120,8 @@ describe('Y0', async function () {
 			uri = await contract.tokenURI(id);
 			expect(uri).to.equal(tokenInitUri + `${id}`);
 
-			id = 1;
-			await expect(contract.tokenURI(id)).to.revertedWith(
-				'ERC721: invalid token ID'
-			);
-			await contract.connect(account1).claimTo(account1.address, 1, 4, {
-				value: mintPrice5,
-			});
-			uri = await contract.tokenURI(id);
-			expect(uri).to.equal(tokenInitUri + `${id}`);
-
 			const balanceOfAccount1 = await contract.balanceOf(account1.address);
-			expect(balanceOfAccount1).to.equal(5);
+			expect(balanceOfAccount1).to.equal(4);
 		});
 		// it('Should return an error if we mint more than supply for a certain type', async () => {
 		// 	// Enable mint
@@ -188,7 +177,7 @@ describe('Y0', async function () {
 			await contract.connect(owner).setIsActive(true);
 			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
 			try {
-				await contract.connect(account1).claimTo(account1.address, 1, 4, {
+				await contract.connect(account1).claimTo(account1.address, 1, 3, {
 					value: mintPrice4 - 1,
 				});
 				assert.fail(0, 1, 'Exception not thrown');
@@ -201,9 +190,8 @@ describe('Y0', async function () {
 		it('Should return an error if we mint with 0 amount', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
 			try {
-				await contract.connect(account1).claimTo(account1.address, 0, 4, {
+				await contract.connect(account1).claimTo(account1.address, 0, 3, {
 					value: 0,
 				});
 				assert.fail(0, 1, 'Exception not thrown');
@@ -216,9 +204,8 @@ describe('Y0', async function () {
 		it('Should return an error if we mint with 11 amount', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			const mintPrice4 = await contract.EXTRA_CAR_PRICE();
 			try {
-				await contract.connect(account1).claimTo(account1.address, 11, 4, {
+				await contract.connect(account1).claimTo(account1.address, 11, 3, {
 					value: 0,
 				});
 				assert.fail(0, 1, 'Exception not thrown');
@@ -234,7 +221,7 @@ describe('Y0', async function () {
 			await contract.connect(owner).setIsActive(true);
 
 			const mintPrice1 = await contract.NORMAL_CAR_PRICE();
-			await contract.connect(account1).claimTo(account1.address, _num, 1, {
+			await contract.connect(account1).claimTo(account1.address, _num, 0, {
 				value: mintPrice1,
 			});
 			const balanceOfAccount1 = await contract.balanceOf(account1.address);
@@ -245,7 +232,7 @@ describe('Y0', async function () {
 	describe('mintByOwner', async function () {
 		it('Should be rejected if not called by owner', async () => {
 			try {
-				await contract.connect(account1).mintByOwner(account1.address, 1, 4);
+				await contract.connect(account1).mintByOwner(account1.address, 1, 3);
 			} catch (err) {
 				expect(err.toString()).to.include('Ownable: caller is not the owner');
 			}
@@ -253,21 +240,21 @@ describe('Y0', async function () {
 		it('Should return an error if we mint -1 amount of token', async () => {
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			const prevSupply = await contract.tierCarSupply(4);
+			const prevSupply = await contract.tierCarSupply(3);
 
 			try {
-				await contract.connect(owner).mintByOwner(account1.address, -1, 4);
+				await contract.connect(owner).mintByOwner(account1.address, -1, 3);
 				assert.fail(0, 1, 'Exception not thrown');
 			} catch (err) {
 				expect(err.toString()).to.include('value out-of-bounds');
 			}
-			expect(await contract.tierCarSupply(4)).to.be.equal(prevSupply);
+			expect(await contract.tierCarSupply(3)).to.be.equal(prevSupply);
 		});
 		it('Should mint if every thing is ok', async () => {
 			const _num = 1;
 			// Enable mint
 			await contract.connect(owner).setIsActive(true);
-			await contract.connect(owner).mintByOwner(account1.address, _num, 1);
+			await contract.connect(owner).mintByOwner(account1.address, _num, 0);
 			const balanceOfAccount1 = await contract.balanceOf(account1.address);
 			expect(balanceOfAccount1).to.equal(1);
 		});
@@ -293,7 +280,7 @@ describe('Y0', async function () {
 
 			// Mint
 			const mintPrice1 = await contract.NORMAL_CAR_PRICE();
-			await contract.connect(account1).claimTo(account1.address, tokenId, 1, {
+			await contract.connect(account1).claimTo(account1.address, tokenId, 0, {
 				value: mintPrice1,
 			});
 
